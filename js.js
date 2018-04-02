@@ -1,10 +1,5 @@
 (function(){
     $(document).ready(function(){
-        // test
-        // drawGroundBorder();
-        // drawBlockImg(1,0,0);
-        // drawBlockImg(2,1,0);
-        // drawBlockImg(3,0,1);
         //-----------------------------------------------------------------------------------------------------
         // 4*4矩阵保存方块，通过矩阵旋转变换方块，旋转后将方块移至矩阵左上角，产生原地旋转的效果
         // 方块下落过程 记录方块位置及方块上一时刻位置,每更新一次 擦除上时刻,绘制这时刻
@@ -57,6 +52,7 @@
             }
             this.pos = [0, 3];//所在行，列
             this.color = ["#FFAEC9", "#B5E61D", "#99D9EA", "#C8BFE7", "#B97A57"];
+            this.changeAngle = 0;
         }
         Block.prototype = {
             //打印方块
@@ -168,10 +164,23 @@
                     }
                     // console.log(flag)
                 }         
-                //将旋转后的矩阵保存回原来的矩阵  
-                for(var i = 0;i < 4;i++)  
-                    for(var j = 0;j < 4;j++)  
-                        this.shape[i][j] = tmp[i][j];   
+                //将旋转后的矩阵保存回原来的矩阵 
+                var changeIndex = 4;
+                if(this.changeAngle==360){
+                    changeIndex = -12;
+                    this.changeAngle = 0;
+                } 
+                for(var i = 0;i < 4;i++){
+                    for(var j = 0;j < 4;j++){
+                        this.shape[i][j] = 0;
+                        if(tmp[i][j]){
+                            this.shape[i][j] = tmp[i][j] + changeIndex;
+                        }
+                    }  
+                        
+                }
+                    
+                
             },
             //移动方块
             // 左(37) 上(38) 右(39) 下(40)
@@ -180,6 +189,7 @@
                     switch (keyCode) {
                         case 38 : {
                             this.dir = 38;
+                            this.changeAngle = this.changeAngle + 90; 
                             this.changeBlock();
                             this.printBlock();
                             break;
@@ -287,10 +297,10 @@
         function Block_i() {
             Block.call(this);
             this.shape = [
-                [1, 1, 1, 1],
-                [0, 0, 0, 0],
-                [0, 0, 0, 0],
-                [0, 0, 0, 0]
+                [1, 0, 0, 0],
+                [2, 0, 0, 0],
+                [3, 0, 0, 0],
+                [4, 0, 0, 0]
             ];
         }
         Block_i.prototype = new Block();
@@ -307,9 +317,9 @@
         function Block_j() {
             Block.call(this);
             this.shape = [
-                [0, 5, 0, 0],
-                [0, 6, 0, 0],
-                [7, 8, 0, 0],
+                [0, 1, 0, 0],
+                [0, 2, 0, 0],
+                [4, 3, 0, 0],
                 [0, 0, 0, 0]
             ];
         }
@@ -317,8 +327,8 @@
         function Block_o() {
             Block.call(this);
             this.shape = [
-                [9, 10, 0, 0],
-                [11, 12, 0, 0],
+                [1, 2, 0, 0],
+                [3, 4, 0, 0],
                 [0, 0, 0, 0],
                 [0, 0, 0, 0]
             ];
@@ -327,8 +337,8 @@
         function Block_z() {
             Block.call(this);
             this.shape = [
-                [13, 14, 0, 0],
-                [0, 1, 1, 0],
+                [1, 2, 0, 0],
+                [0, 3, 4, 0],
                 [0, 0, 0, 0],
                 [0, 0, 0, 0]
             ];
@@ -512,9 +522,7 @@
             var ctx = canvas.getContext("2d");
             var bg = new Image();
             bg.onload = function(){
-                ctx.drawImage(bg,y*32,x*32,32,32);
-                ctx.strokeStyle = 'white';ctx.lineWidth = 2;
-                ctx.strokeRect(y*32,x*32,32,32);
+               ctx.drawImage(bg,y*32,x*32,32,32);
             }
             var imgSrc = 'imgs/'+imgNum+'.png';
             bg.src = imgSrc;
