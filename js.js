@@ -1,6 +1,10 @@
 (function(){
     $(document).ready(function(){
+        // test
         // drawGroundBorder();
+        // drawBlockImg(1,0,0);
+        // drawBlockImg(2,1,0);
+        // drawBlockImg(3,0,1);
         //-----------------------------------------------------------------------------------------------------
         // 4*4矩阵保存方块，通过矩阵旋转变换方块，旋转后将方块移至矩阵左上角，产生原地旋转的效果
         // 方块下落过程 记录方块位置及方块上一时刻位置,每更新一次 擦除上时刻,绘制这时刻
@@ -104,7 +108,8 @@
                 //绘制方块
                 for (var i = 0; i < 4; i++) {
                     for (var j = 0; j < 4; j++) {
-                        if(this.shape[i][j] == 1) {
+                        // if(this.shape[i][j] == 1) {
+                        if(this.shape[i][j]) {
                             var x = i + this.pos[0];
                             var y = j + this.pos[1];
                             if (x < 15) {
@@ -116,8 +121,10 @@
                             }
                             $(ground[x][y]).css({"background" : this.color, "z-index" : 1});
                             z_index[x][y] = 1;
-                            draw9('canvasGround',x,y,this.color);
-                            beforeBlock[x][y] = 1;
+                            // draw9('canvasGround',x,y,this.color);
+                            drawBlockImg(this.shape[i][j],x,y);
+                            clearCanvasBlock(x-1,y);
+                            beforeBlock[x][y] = this.shape[i][j];
                             //}
                         }
                     }
@@ -127,7 +134,7 @@
                     for (var i = 0; i < 4; i++) {
                         for (var j = 0; j < 4; j++) {
                             if(this.shape[i][j]) {
-                                allBlock[i + this.pos[0]][j + this.pos[1]] = 1;
+                                allBlock[i + this.pos[0]][j + this.pos[1]] = this.shape[i][j];
                             }
                         }
                     }
@@ -290,8 +297,8 @@
         function Block_s() {
             Block.call(this);
             this.shape = [
-                [0, 1, 1, 0],
-                [1, 1, 0, 0],
+                [0, 1, 2, 0],
+                [3, 4, 0, 0],
                 [0, 0, 0, 0],
                 [0, 0, 0, 0]
             ];
@@ -300,9 +307,9 @@
         function Block_j() {
             Block.call(this);
             this.shape = [
-                [0, 1, 0, 0],
-                [0, 1, 0, 0],
-                [1, 1, 0, 0],
+                [0, 5, 0, 0],
+                [0, 6, 0, 0],
+                [7, 8, 0, 0],
                 [0, 0, 0, 0]
             ];
         }
@@ -310,8 +317,8 @@
         function Block_o() {
             Block.call(this);
             this.shape = [
-                [1, 1, 0, 0],
-                [1, 1, 0, 0],
+                [9, 10, 0, 0],
+                [11, 12, 0, 0],
                 [0, 0, 0, 0],
                 [0, 0, 0, 0]
             ];
@@ -320,7 +327,7 @@
         function Block_z() {
             Block.call(this);
             this.shape = [
-                [1, 1, 0, 0],
+                [13, 14, 0, 0],
                 [0, 1, 1, 0],
                 [0, 0, 0, 0],
                 [0, 0, 0, 0]
@@ -428,7 +435,8 @@
                                 "z-index":$(ground[k-1][l]).css("z-index")});
                             var backgroundColor = getBackgroundColor(k-1,l);
                             clearCanvasBlock(k,l);
-                            draw9('canvasGround',k,l,backgroundColor);
+                            // draw9('canvasGround',k,l,backgroundColor);
+                            drawBlockImg(allBlock[k][l],k,l);
                             z_index[k][l] = z_index[k-1][l];
                         }
                     }
@@ -498,6 +506,18 @@
             // "rgba(255,0,0,0.2)"
             var colorStr = "rgba("+colorData.toString()+")"
             return colorStr;
+        }
+        function drawBlockImg(imgNum,x,y){
+            var canvas = document.getElementById('canvasGround');
+            var ctx = canvas.getContext("2d");
+            var bg = new Image();
+            bg.onload = function(){
+                ctx.drawImage(bg,y*32,x*32,32,32);
+                ctx.strokeStyle = 'white';ctx.lineWidth = 2;
+                ctx.strokeRect(y*32,x*32,32,32);
+            }
+            var imgSrc = 'imgs/'+imgNum+'.png';
+            bg.src = imgSrc;
         }
         //显示下一块方块
         function printNext() {
